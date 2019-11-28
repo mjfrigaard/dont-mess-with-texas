@@ -1,0 +1,104 @@
+---
+title: "Don't Mess with Texas Part 3: Split and wrangle the data"
+author: "Martin Frigaard"
+date: "`r Sys.Date()`"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+library(hrbrthemes)
+library(tidyverse)
+library(rvest)
+library(XML)
+library(magrittr)
+library(xml2)
+library(here)
+# figs folder
+if (!file.exists("figs")) {
+  dir.create("figs")
+}
+# chunk options
+knitr::opts_chunk$set(
+  echo = TRUE, # show/hide all code
+  # results = "hide", # hide results
+  tidy = FALSE, # cleaner code printing
+  comment = "#> ", # better console printing
+  eval = TRUE, # turn this to FALSE stop code chunks from running
+  message = TRUE, # show messages
+  warning = FALSE, # show warnings
+  size = "small", # size of the text
+  fig.path = "figs/", # location of files
+  fig.height = 7.5, # height of figures
+  fig.width = 10 # width of figures
+) # width of figures
+# knit options
+opts_knit$set(width = 75)
+```
+
+# Texas death row executed offenders website
+
+This continues with the [Texas Department of Criminal Justice data](http://www.tdcj.state.tx.us/death_row/dr_executed_offenders.html), which keeps records of every inmate executed. 
+
+## The data
+
+These data are imported from the .Rmd we used to scrape the website. These data are in the folder below. 
+
+```{r DirProcessed}
+DirProcessed <- fs::dir_tree("data/processed") %>% 
+  tibble::enframe(name = NULL) %>% 
+  dplyr::arrange(desc(value))
+```
+
+This will import the most recent data.
+
+```{r import-ExecOffenders}
+ExecOffenders <- readr::read_csv(DirProcessed[[1]][1])
+```
+
+## Use `purrr` and `dplyr` to split and export .csv files
+
+This next use of `purrr` and iteration will cover how to:
+
+1. Split the `ExecOffenders` data frame into `ExExOffndrshtml` and `ExExOffndrsjpg` 
+
+2. Save each of these data frames as .csv files
+
+We should have two datasets with the following counts. 
+
+```{r check-jpg_html-counts}
+ExecOffenders %>% 
+  dplyr::count(jpg_html, sort = TRUE)
+```
+
+These are new experimental functions from `dplyr`, and a big shout out to Luis Verde Arregoitia for [his post](https://luisdva.github.io/rstats/export-iteratively/) on a similar topic. 
+
+The `dplyr::group_split()` *"returns a list of tibbles. Each tibble contains the rows of .tbl for the associated group and all the columns, including the grouping variables"*, and I combine it with `purrr::walk()` and `readr::write_csv()` to export each file. 
+
+```{r dplyr-purrr}
+ExecOffenders %>% 
+  dplyr::group_by(jpg_html) %>% 
+  dplyr::group_split() %>% 
+  purrr::walk(~.x %>% # we now carry this little .x everywhere we want it 
+                      # to go.
+                write_csv(path = paste0("data/", 
+                                        # processed data folder
+                                        "processed/",
+                            # datestamp
+                            base::noquote(lubridate::today()),
+                            # folder
+                            "/",
+                            # datestamp
+                            base::noquote(lubridate::today()),
+                            # name of file
+                            "-ExExOffndrs",
+                            # split by this variable
+                            base::unique(.x$jpg_html), 
+                            # file extension
+                            ".csv")))
+
+fs::dir_ls("data/processed/2019-11-28")
+```
+
+### End
