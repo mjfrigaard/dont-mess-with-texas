@@ -227,10 +227,7 @@ test_magick_crop2 <- magick::image_crop(
 test_magick_crop2
 ```
 
-```{r print-test_magick_crop2, echo=FALSE}
-# fs::dir_ls("image")
-knitr::include_graphics(path = "figs/test_magick_crop2.png")
-```
+
 
 Now I will rotate this image back to center (`image_rotate` again) and flip it using `magick::image_flip()`
 
@@ -244,10 +241,7 @@ test_magick_flip
 ```
 
 
-```{r print-magik-image-flip, echo=FALSE}
-# fs::dir_ls("image")
-knitr::include_graphics(path = "figs/magik-image-flip.png")
-```
+
 
 I'll crop the rest of the text out of the image, and trim the whitespace for the plot. 
 
@@ -261,9 +255,7 @@ test_magick_crop3
 ```
 
 
-```{r print-test_magick_crop3, echo=FALSE}
-knitr::include_graphics(path = "figs/test_magick_crop3.png")
-```
+
 
 
 ```{r test_magick_flip2}
@@ -272,9 +264,7 @@ test_magick_flip2 <- magick::image_flip(test_magick_crop3)
 test_magick_flip2
 ```
 
-```{r print-test_magick_flip2, echo=FALSE}
-knitr::include_graphics(path = "figs/test_magick_flip2.png")
-```
+
 
 ```{r test_magick_rotate270v2}
 # rotate to remove the dot
@@ -284,9 +274,7 @@ test_magick_rotate270v2 <- magick::image_rotate(test_magick_flip2,
 test_magick_rotate270v2
 ```
 
-```{r print-test_magick_rotate270v2, echo=FALSE}
-knitr::include_graphics(path = "figs/test_magick_rotate270v2.png")
-```
+
 
 
 ```{r test_magick_crop4}
@@ -298,9 +286,7 @@ test_magick_crop4 <- magick::image_crop(
 test_magick_crop4
 ```
 
-```{r print-test_magick_crop4, echo=FALSE}
-knitr::include_graphics(path = "figs/test_magick_crop4.png")
-```
+
 
 ```{r test_magick_rotate90v02}
 # rotate back to center
@@ -310,9 +296,7 @@ test_magick_rotate90v02 <- magick::image_rotate(test_magick_crop4,
 test_magick_rotate90v02
 ```
 
-```{r print-test_magick_rotate90v02, echo=FALSE}
-knitr::include_graphics(path = "figs/test_magick_rotate90v02.png")
-```
+
 
 
 ```{r test_magick_clean}
@@ -324,9 +308,6 @@ test_magick_clean <- magick::image_trim(
 test_magick_clean
 ```
 
-```{r print-test_magick_clean, echo=FALSE}
-knitr::include_graphics(path = "figs/test_magick_clean.png")
-```
 
 Now that I have all the trimming on and cropping done, I will add some effects for the `ggplot2` image. 
 
@@ -345,9 +326,6 @@ test_magick_final <- magick::image_flatten(test_image_modulate,
 test_magick_final
 ```
 
-```{r print-test_magick_final, echo=FALSE}
-knitr::include_graphics(path = "figs/test_magick_final.png")
-```
 
 ```{r export-test_magick_final}
 magick::image_write(image = test_magick_final, 

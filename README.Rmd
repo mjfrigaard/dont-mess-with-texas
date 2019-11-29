@@ -16,7 +16,7 @@ if (!file.exists("figs")) {
 # chunk options
 knitr::opts_chunk$set(
   echo = TRUE, # show/hide all code
-  eval = FALSE, # hide results
+  eval = TRUE, # hide results
   tidy = FALSE, # cleaner code printing
   comment = "#> ", # better console printing
   message = TRUE, # show messages
@@ -61,9 +61,104 @@ These data come from the [Texas Department of Criminal Justice](https://www.tdcj
 
 Capital punishment in Texas has a long history (read about it [here](https://en.wikipedia.org/wiki/Capital_punishment_in_Texas)). At the time of this writing (**`r Sys.Date()`**), Texas has carried out more than 1/3 of the total executions in the United States. The project tells the story of capitol punishment in Texas (and the US). I created this project to raise awareness about the reality of state-sanctioned deaths, and to try and understand more about why Texas is such an outlier with respect to capitol punishment.
 
-I constantly stumble across data on websites I'd like to use in a visualization or analyze. R comes with two great packages for scraping data from .html tables (`rvest` and `xml`). In order to download data, sometimes each file needs to be downloaded onto your local machine. The `purrr` package has quite a few excellent functions for iteration to help with this.
+I stumbled across data this website and decided to use them in a series of visualizations. R comes with two great packages for scraping data from .html tables (`rvest` and `xml`). In order to download data, sometimes each file needs to be downloaded onto your local machine. The `purrr` package has quite a few excellent functions for iteration to help with this.
 
 ## Texas death row executed offenders website
 
 Texas Department of Criminal Justice keeps records of every inmate they execute. We are going to scrape the data found
 [here](http://www.tdcj.state.tx.us/death_row/dr_executed_offenders.html).
+
+### The data 
+
+```{r import, message=FALSE, warning=FALSE}
+DirProcessed <- fs::dir_tree("data/processed") %>%
+  tibble::enframe(name = NULL) %>%
+  dplyr::arrange(desc(value))
+ExecOffenders <- readr::read_csv(DirProcessed[[1]][1])
+ExecOffenders <- ExecOffenders %>%
+  dplyr::mutate(
+    date = lubridate::mdy(date),
+    year = lubridate::year(date),
+    yday = lubridate::yday(date),
+    month = lubridate::month(date, label = TRUE)) 
+```
+
+```{r inspect-ExecOffenders}
+library(inspectdf)
+inspectdf::inspect_cat(df1 = ExecOffenders) %>% 
+  inspectdf::show_plot(text_labels = TRUE)
+```
+
+```{r inspect-num-ExecOffenders}
+library(inspectdf)
+inspectdf::inspect_num(df1 = ExecOffenders) %>% 
+  inspectdf::show_plot(text_labels = TRUE)
+```
+
+### The jpgs
+
+The information on the offenders are stored in .jpg files, so these needed to be downloaded using `purrr::walk2()`. These are not all small files, so this can take a bit depending on your internet speed. 
+
+```{r image-walk2.gif, out.width='85%', echo=FALSE}
+# fs::dir_ls("figs")
+knitr::include_graphics(path = "figs/2019-11-27-image-walk2.gif")
+```
+
+### Editing images 
+
+I used `magick` and `grid` to edit the images. You can see the results here: 
+
+```{r print-test_magick_crop2, echo=FALSE}
+# fs::dir_ls("image")
+knitr::include_graphics(path = "figs/test_magick_crop2.png")
+```
+
+```{r print-magik-image-flip, echo=FALSE}
+# fs::dir_ls("image")
+knitr::include_graphics(path = "figs/magik-image-flip.png")
+```
+
+```{r print-test_magick_crop3, echo=FALSE}
+knitr::include_graphics(path = "figs/test_magick_crop3.png")
+```
+
+```{r print-test_magick_flip2, echo=FALSE}
+knitr::include_graphics(path = "figs/test_magick_flip2.png")
+```
+
+```{r print-test_magick_rotate270v2, echo=FALSE}
+knitr::include_graphics(path = "figs/test_magick_rotate270v2.png")
+```
+
+```{r print-test_magick_crop4, echo=FALSE}
+knitr::include_graphics(path = "figs/test_magick_crop4.png")
+```
+
+
+```{r test_magick_clean.png, echo=FALSE}
+# fs::dir_ls("figs")
+knitr::include_graphics(path = "figs/test_magick_clean.png")
+```
+
+
+```{r test_magick_final, echo=FALSE}
+# fs::dir_ls("figs")
+knitr::include_graphics(path = "figs/2019-11-28-test_magick_final.jpg")
+```
+
+```{r magick-annotate.png, echo=FALSE}
+# fs::dir_ls("figs")
+knitr::include_graphics(path = "figs/magick-annotate.png")
+```
+
+## Executions over time
+
+This is a plot of executinos over time.
+
+```{r gg_executions_year_01, echo=FALSE}
+knitr::include_graphics(path = "figs/gg_executions_year_01-1.png")
+```
+
+
+
+
