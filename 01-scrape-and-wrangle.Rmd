@@ -110,7 +110,7 @@ Download the [selector gadget app](https://selectorgadget.com/) for your browser
 
 ```{r selector_gadget, out.width='70%', echo=FALSE}
 # fs::dir_ls("image")
-include_graphics("image/selector_gadget.png")
+include_graphics("figs/selector_gadget.png")
 ```
 
 In order to get the `nodes` from the table, we need to send `webpage` through a few passes of `rvest` functions (`html_nodes` and `html_attr`) with various `css` tags to get the correct URL paths. This took a few tries and some trial and error, but eventually I was able to figure out the the correct combinations to get the `Links` to the pages.
